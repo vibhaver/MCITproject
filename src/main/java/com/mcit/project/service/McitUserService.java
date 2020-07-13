@@ -10,12 +10,20 @@ public interface McitUserService {
 
 	McitUser findById(Integer userId);
 
-	void saveOrUpdateUser(McitUser user);
+	void saveUser(McitUser user);
+
+	void updateUser(McitUser user);
 
 	List<McitUser> findAllMembersByProjectId(Integer projectId);
 
 	List<McitUser> getLeaders();
 
 	List<McitUser> getMembers();
+	
+	McitUser getCurrentMcitUser();
+
+	boolean ifUserExistsWithSameUserId(String username);
+	
+	boolean hasRole(String role);
 
 }

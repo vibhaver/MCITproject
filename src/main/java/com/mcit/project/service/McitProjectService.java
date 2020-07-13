@@ -12,8 +12,12 @@ public interface McitProjectService {
 	
 	McitProject findById(Integer projectId);
 	
-	void saveOrUpdateProject(McitProject project);
+	void saveProject(McitProject project);
+	
+	void updateProject(McitProject project);
 
 	void deleteProjectById(Integer projectId);
+
+	List<McitProject> getEigibleProjectsForTaskCreation();
 
 }

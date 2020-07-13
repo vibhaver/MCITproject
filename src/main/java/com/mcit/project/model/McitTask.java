@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.mcit.project.util.TaskStatusEnum;
+
 @Entity
 @Table(schema = "HR", name = "MCIT_TASK")
 public class McitTask {
@@ -37,7 +39,7 @@ public class McitTask {
 	@Column(name = "END_DATE")
 	private Date endDate;
 	@Column(name = "TASK_STATE")
-	private String taskState;
+	private String taskState = TaskStatusEnum.PENDING.toString();
 
 	public Integer getTaskId() {
 		return taskId;

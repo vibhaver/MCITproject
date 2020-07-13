@@ -10,15 +10,15 @@ body {
 </style>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Project Management</title>
+<title>Project</title>
 </head>
 <body>
 	<%@include file="header.jsp"%>
 	<div style="margin-left: 30px; margin-right: 30px; margin-top: 30px;">
-		<h3>PROJECTS</h3>
-		<security:authorize access="hasAnyRole('ROLE_ADMIN')">
-			<a class="btn btn-primary" href="/project/createProject"> <i
-				class="fa fa-plus"></i> <span>ADD PROJECT</span>
+		<h3>TASKS</h3>
+		<security:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_LEADER')">
+			<a class="btn btn-primary" href="/task/createTask"> <i
+				class="fa fa-plus"></i> <span>ADD TASK</span>
 			</a>
 			<br />
 		</security:authorize>
@@ -29,34 +29,36 @@ body {
 					<tr>
 						<th>Title</th>
 						<th>Description</th>
+						<th>Project Title</th>
 						<th>Start Date</th>
 						<th>End Date</th>
-						<th>Creator</th>
-						<th>Leader</th>
+						<th>Assignee</th>
+						<th>Task Status</th>
 						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="project" items="${projects}">
+					<c:forEach var="task" items="${tasks}">
 						<tr>
-							<td>${project.title}</td>
-							<td>${project.description}</td>
-							<td>${project.startDate}</td>
-							<td>${project.endDate}</td>
-							<td>${project.creator.firstName}</td>
-							<td>${project.leader.firstName}</td>
+							<td>${task.title}</td>
+							<td>${task.description}</td>
+							<td>${task.project.title}</td>
+							<td>${task.startDate}</td>
+							<td>${task.endDate}</td>
+							<td>${task.assignee.username}</td>
+							<td>${task.taskState}</td>
 							<td><a class="btn btn-sm btn-primary"
-								href="/project/editProject/${project.projectId}"
-								id="+ 'project_id_' + ${project.projectId} + '_edit'"> <i
+								href="/task/editTask/${task.taskId}"
+								id="+ 'task_id_' + ${task.taskId} + '_edit'"> <i
 									class="fa fa-edit"></i>
 							</a> <a class="btn btn-sm btn-primary"
-								href="/project/viewProject/${project.projectId}"
-								id="+ 'project_id_' + ${project.projectId} + '_view'"> <i
+								href="/task/viewTask/${task.taskId}"
+								id="+ 'task_id_' + ${task.taskId} + '_view'"> <i
 									class="fa fa-eye"></i>
-							</a> <form:form action="/project/deleteProject" method="POST"
-									name="someForm" modelAttribute="project">
-									<input type="hidden" class="form-control " name="projectId"
-										value="${project.projectId}" />
+							</a> <form:form action="/task/deleteTask" method="POST"
+									name="someForm" modelAttribute="task">
+									<input type="hidden" class="form-control " name="taskId"
+										value="${task.taskId}" />
 									<button type="submit" class="btn btn-sm btn-primary">
 										<i class="fa fa-trash"></i>
 									</button>
@@ -70,7 +72,7 @@ body {
 </body>
 <script type="text/javascript">
 	$(document).ready(function() {
-		var element = document.getElementById("projectManagementHeader");
+		var element = document.getElementById("taskManagementHeader");
 		element.classList.add("active");
 	});
 </script>

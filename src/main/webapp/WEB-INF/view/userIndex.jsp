@@ -14,23 +14,11 @@ body {
 </head>
 <body>
 	<%@include file="header.jsp"%>
-	<nav class="navbar navbar-default">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand">MCIT Project</a>
-			</div>
-			<ul class="nav navbar-nav">
-				<li class="active"><a href="/user/index">User Management</a></li>
-				<li><a href="/project/index">Project Management</a></li>
-				<li><a href="/task/index">Task Management</a></li>
-			</ul>
-		</div>
-	</nav>
 	<div style="margin-left: 30px; margin-right: 30px; margin-top: 30px;">
+		<h3>USERS</h3>
 		<a class="btn btn-primary" href="/user/createUser"> <i
 			class="fa fa-plus"></i> <span>ADD USER</span>
-		</a>
-		<br />
+		</a> <br />
 		<div class="box-item">
 			<table id="example" class="table table-striped table-bordered"
 				cellspacing="0" width="100%">
@@ -65,9 +53,9 @@ body {
 
 </body>
 <script type="text/javascript">
-	//document.title = 'Simple DataTable';
-	function myFunction() {
-		window.open('/user/createUser');
-	}
+	$(document).ready(function() {
+		var element = document.getElementById("userManagementHeader");
+		element.classList.add("active");
+	});
 </script>
 </html>

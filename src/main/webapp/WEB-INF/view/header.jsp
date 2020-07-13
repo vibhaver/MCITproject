@@ -20,22 +20,44 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
 	integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
 	crossorigin="anonymous"></script>
+<%@ taglib prefix="security"
+	uri="http://www.springframework.org/security/tags"%>
 
-
-<!-- <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
 	<div class="container-fluid">
 		<div class="navbar-header">
-			<a class="navbar-brand">MCIT Project</a>
+			<a class="navbar-brand">MCIT</a>
 		</div>
 		<ul class="nav navbar-nav">
-			<li class="active"><a href="/user/index">User Management</a></li>
-			<li><a href="/project/index">Project Management</a></li>
-			<li><a href="/task/index">Task Management</a></li>
+			<security:authorize access="hasRole('ROLE_ADMIN')">
+				<li id="userManagementHeader"><a href="/user/index">User
+						Management</a></li>
+			</security:authorize>
+			<security:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_LEADER')">
+				<li id="projectManagementHeader"><a href="/project/index">Project
+						Management</a></li>
+			</security:authorize>
+			<security:authorize
+				access="hasAnyRole('ROLE_ADMIN', 'ROLE_LEADER', 'ROLE_MEMBER')">
+				<li id="taskManagementHeader"><a href="/task/index">Task
+						Management</a></li>
+			</security:authorize>
+		</ul>
+		<ul class="nav navbar-nav floatright">
+			<li><a href="javascript:callLogout()">Logout</a></li>
 		</ul>
 	</div>
-</nav> -->
+</nav>
+<form action="/logout" method="post">
+	<input type="hidden" id="logoutBtn" value="Logout" type="submit" />
+</form>
 
 <style>
+body {
+  font: 13px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
+  color: #404040;
+  background: #e9f3f6;
+}
 .modal {
 	display: none; /* Hidden by default */
 	position: fixed; /* Stay in place */
@@ -72,4 +94,18 @@
 	text-decoration: none;
 	cursor: pointer;
 }
+
+.floatright {
+	float: right;
+}
 </style>
+<script>
+function callLogout(){
+	console.log("hiiii");
+	var url = "/logout";
+	$.post(url, null, function(data) {
+		console.log("logout");
+		location.replace("http://localhost:8082/login")
+	});
+}
+</script>

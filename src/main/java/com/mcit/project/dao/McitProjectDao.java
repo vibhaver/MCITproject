@@ -14,8 +14,8 @@ public interface McitProjectDao {
 	
 	void saveOrUpdateProject(McitProject project);
 
-//	int deleteProjectById(Integer projectId);
-
 	void deleteProject(McitProject project);
+
+	List<McitProject> findAllByLeader(Integer leaderId);
 
 }

@@ -5,23 +5,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>User Management</title>
+<title>Task Management</title>
 </head>
 <body>
 	<%@include file="header.jsp"%>
-	<div style="background: #e9f3f6; margin-left: 30px; margin-right: 30px; margin-top: 30px;">
+	<div style=" background: #e9f3f6; margin-left: 30px; margin-right: 30px; margin-top: 30px;">
 		<div style="width: 50%;">
-			<h3>PROJECT VIEW</h3>
-			<form:form modelAttribute="project">
+			<h3>TASK VIEW</h3>
+			<form:form modelAttribute="task">
 				<div class="form-group">
 					<label for="title">Title</label> <input type="text"
-						class="form-control " name="title" value="${project.title}"
-						readonly />
+						class="form-control " name="title" value="${task.title}" readonly />
 				</div>
 				<div class="form-group">
 					<label for="description">Description</label> <input type="text"
 						class="form-control" name="description"
-						value="${project.description}" readonly />
+						value="${task.description}" readonly />
 				</div>
 				<div class="form-group">
 					<label for="startDate">Start date</label> <input id="startDate"
@@ -31,15 +30,19 @@
 					<label for="endDate">End date</label> <input id="endDate"
 						type="date" class="form-control" name="endDate" readonly />
 				</div>
+				<div class="form-group">
+					<label for="taskState">Task State</label> <input type="text"
+						class="form-control" name="taskState" value="${task.taskState}"
+						readonly />
+				</div>
 			</form:form>
 		</div>
-		<h4>PROJECT MEMBERS</h4>
+		<h4>ASSIGNEE</h4>
 		<div class="box-item">
 			<table id="example" class="table table-striped table-bordered"
 				cellspacing="0" width="100%">
 				<thead>
 					<tr>
-						<th>Project Role</th>
 						<th>Username</th>
 						<th>First Name</th>
 						<th>Last Name</th>
@@ -47,29 +50,14 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>CREATOR</td>
-						<td>${project.creator.username}</td>
-						<td>${project.creator.firstName}</td>
-						<td>${project.creator.lastName}</td>
+						<td>${task.assignee.username}</td>
+						<td>${task.assignee.firstName}</td>
+						<td>${task.assignee.lastName}</td>
 					</tr>
-					<tr>
-						<td>LEADER</td>
-						<td>${project.leader.username}</td>
-						<td>${project.leader.firstName}</td>
-						<td>${project.leader.lastName}</td>
-					</tr>
-					<c:forEach var="user" items="${project.projectMembers}">
-						<tr>
-							<td>MEMBER</td>
-							<td>${user.username}</td>
-							<td>${user.firstName}</td>
-							<td>${user.lastName}</td>
-						</tr>
-					</c:forEach>
 				</tbody>
 			</table>
 		</div>
-		<h4>PROJECT TASKS</h4>
+		<h4>PROJECT</h4>
 		<div class="box-item">
 			<table id="example" class="table table-striped table-bordered"
 				cellspacing="0" width="100%">
@@ -77,35 +65,31 @@
 					<tr>
 						<th>Title</th>
 						<th>Description</th>
-						<th>Assignee</th>
+						<th>Leader</th>
 						<th>Start Date</th>
 						<th>End Date</th>
-						<th>Task State</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="task" items="${project.tasks}">
-						<tr>
-							<td>${task.title}</td>
-							<td>${task.description}</td>
-							<td>${task.assignee.username}</td>
-							<td>${task.startDate}</td>
-							<td>${task.endDate}</td>
-							<td>${task.taskState}</td>
-						</tr>
-					</c:forEach>
+					<tr>
+						<td>${task.project.title}</td>
+						<td>${task.project.description}</td>
+						<td>${task.project.leader.username}</td>
+						<td>${task.project.startDate}</td>
+						<td>${task.project.endDate}</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			var element = document.getElementById("projectManagementHeader");
+			var element = document.getElementById("taskManagementHeader");
 			element.classList.add("active");
-			var startDate = "${project.startDate}";
+			var startDate = "${task.startDate}";
 			if (startDate != null)
 				$("#startDate").val(startDate.toString().substring(0, 10));
-			var endDate = "${project.endDate}";
+			var endDate = "${task.endDate}";
 			if (endDate != null)
 				$("#endDate").val(endDate.toString().substring(0, 10));
 		});

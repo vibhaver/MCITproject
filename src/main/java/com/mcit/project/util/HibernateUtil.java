@@ -16,13 +16,11 @@ public class HibernateUtil {
 
     private static SessionFactory buildSessionFactory() {
         try {
-            // Create the SessionFactory from hibernate.cfg.xml
             registry
                     = new StandardServiceRegistryBuilder().configure().build();
 
             return new Configuration().configure().buildSessionFactory(registry);
         } catch (Throwable ex) {
-            // Make sure you log the exception, as it might be swallowed
             System.err.println("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
         }
@@ -33,7 +31,6 @@ public class HibernateUtil {
     }
 
     public static void shutdown() {
-        // Close caches and connection pools
         getSessionFactory().close();
         StandardServiceRegistryBuilder.destroy(registry);
     }

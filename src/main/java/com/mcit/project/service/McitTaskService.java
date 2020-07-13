@@ -17,5 +17,7 @@ public interface McitTaskService {
 	int deleteTaskById(Integer taskId);
 
 	int deleteTaskByProjectId(Integer projectId);
+
+	McitTask findById(Integer taskId);
 	
 }

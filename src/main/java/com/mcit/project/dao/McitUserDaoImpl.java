@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.mcit.project.model.McitUser;
@@ -29,6 +30,7 @@ public class McitUserDaoImpl implements McitUserDao {
 		session.beginTransaction();
 		session.saveOrUpdate(user);
 		session.flush();
+		session.clear();
 		session.getTransaction().commit();
 	}
 
@@ -47,20 +49,28 @@ public class McitUserDaoImpl implements McitUserDao {
 		return (McitUser) query.uniqueResult();
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<McitUser> getLeaders() {
-		Criteria query = session.createCriteria(McitUser.class);
-		query.add(Restrictions.eq("userRole", UserRoleEnum.LEADER.toString()));
-		return query.list();
+		String hql = "SELECT U FROM McitUser U WHERE U.userId IN (SELECT A.mcitUser.userId FROM McitAuthorities A WHERE A.authority = :authority)";
+		Query<McitUser> q = session.createQuery(hql).setParameter("authority", UserRoleEnum.LEADER.toString());
+		return q.getResultList();
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<McitUser> getMembers() {
-		Criteria query = session.createCriteria(McitUser.class);
-		query.add(Restrictions.eq("userRole", UserRoleEnum.MEMBER.toString()));
-		return query.list();
+		String hql = "SELECT U FROM McitUser U WHERE U.userId IN (SELECT A.mcitUser.userId FROM McitAuthorities A WHERE A.authority = :authority)";
+		Query<McitUser> q = session.createQuery(hql).setParameter("authority", UserRoleEnum.MEMBER.toString());
+		return q.getResultList();
 	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	  public McitUser findUserByUsername(String username) {
+		Criteria query = session.createCriteria(McitUser.class);
+		query.add(Restrictions.eq("username", username));
+		return (McitUser) query.uniqueResult();
+	  }
 
 }

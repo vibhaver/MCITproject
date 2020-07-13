@@ -19,16 +19,31 @@ public class McitTaskDaoImpl implements McitTaskDao {
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public List<McitTask> findAll() {
-		System.out.println("McitTaskDaoImpl.findAll()");
 		Criteria query = session.createCriteria(McitTask.class);
 		return query.list();
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<McitTask> findAllByAssignee(Integer assigneeId) {
+		String hql = "SELECT T FROM McitTask T WHERE T.assignee.userId = :assigneeId";
+		Query<McitTask> q = session.createQuery(hql).setParameter("assigneeId", assigneeId);
+		return q.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<McitTask> findAllByLeader(Integer leaderId) {
+		String hql = "SELECT T FROM McitTask T WHERE T.project.projectId IN (SELECT P.projectId FROM McitProject P WHERE P.leader.userId = :leaderId)";
+		Query<McitTask> q = session.createQuery(hql).setParameter("assigneeId", leaderId);
+		return q.getResultList();
+	}
+
 	@SuppressWarnings({ "deprecation" })
 	@Override
 	public McitTask findById(Integer taskId) {
 		Criteria query = session.createCriteria(McitTask.class);
-		query.add(Restrictions.eq("TASK_ID", taskId));
+		query.add(Restrictions.eq("taskId", taskId));
 		return (McitTask) query.uniqueResult();
 	}
 
@@ -42,8 +57,11 @@ public class McitTaskDaoImpl implements McitTaskDao {
 
 	@Override
 	public void saveOrUpdateTask(McitTask task) {
+		session.clear();
 		session.beginTransaction();
 		session.saveOrUpdate(task);
+		session.flush();
+		session.clear();
 		session.getTransaction().commit();
 	}
 

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mcit.project.dao.McitTaskDao;
 import com.mcit.project.model.McitTask;
+import com.mcit.project.model.McitUser;
+import com.mcit.project.util.UserRoleEnum;
 
 @Service
 public class McitTaskServiceImpl implements McitTaskService {
@@ -16,10 +18,21 @@ public class McitTaskServiceImpl implements McitTaskService {
 	@Autowired
 	private McitTaskDao mcitTaskDao;
 
+	@Autowired
+	private McitUserService userService;
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<McitTask> findAll() {
-		return mcitTaskDao.findAll();
+		if (userService.hasRole(UserRoleEnum.LEADER.toString())) {
+			McitUser currentMcitUser = userService.getCurrentMcitUser();
+			return mcitTaskDao.findAllByLeader(currentMcitUser.getUserId());
+		} else if (userService.hasRole(UserRoleEnum.MEMBER.toString())) {
+			McitUser currentMcitUser = userService.getCurrentMcitUser();
+			return mcitTaskDao.findAllByAssignee(currentMcitUser.getUserId());
+		} else {
+			return mcitTaskDao.findAll();
+		}
 	}
 
 	@Override
@@ -50,6 +63,11 @@ public class McitTaskServiceImpl implements McitTaskService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public int deleteTaskByProjectId(Integer projectId) {
 		return mcitTaskDao.deleteTaskByProjectId(projectId);
+	}
+
+	@Override
+	public McitTask findById(Integer taskId) {
+		return mcitTaskDao.findById(taskId);
 	}
 
 }

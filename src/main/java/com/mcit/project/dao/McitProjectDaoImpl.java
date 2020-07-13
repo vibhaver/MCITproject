@@ -16,14 +16,6 @@ public class McitProjectDaoImpl implements McitProjectDao {
 
 	private static Session session = HibernateUtil.getSessionFactory().openSession();
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public int deleteProjectById(Integer projectId) {
-//		String hql = "DELETE FROM MCIT_PROJECT WHERE PROJECT_ID = :projectId";
-//		Query<McitProject> q = session.createQuery(hql).setParameter("projectId", projectId);
-//		return q.executeUpdate();
-//	}
-
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public List<McitProject> findAllByCreatorId(Integer creatorId) {
@@ -38,6 +30,7 @@ public class McitProjectDaoImpl implements McitProjectDao {
 		session.beginTransaction();
 		session.saveOrUpdate(project);
 		session.flush();
+		session.clear();
 		session.getTransaction().commit();
 	}
 
@@ -62,6 +55,15 @@ public class McitProjectDaoImpl implements McitProjectDao {
 		session.beginTransaction();
 		session.delete(project);
 		session.flush();
+		session.clear();
 		session.getTransaction().commit();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<McitProject> findAllByLeader(Integer leaderId) {
+		String hql = "SELECT P FROM McitProject P WHERE P.leader.userId = :leaderId";
+		Query<McitProject> q = session.createQuery(hql).setParameter("assigneeId", leaderId);
+		return q.getResultList();
 	}
 }

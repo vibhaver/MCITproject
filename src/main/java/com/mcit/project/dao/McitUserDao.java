@@ -17,5 +17,7 @@ public interface McitUserDao {
 	List<McitUser> getLeaders();
 
 	List<McitUser> getMembers();
+	
+	McitUser findUserByUsername(String username);
 
 }

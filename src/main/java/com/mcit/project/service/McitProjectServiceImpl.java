@@ -9,17 +9,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mcit.project.dao.McitProjectDao;
 import com.mcit.project.model.McitProject;
+import com.mcit.project.model.McitUser;
+import com.mcit.project.util.UserRoleEnum;
 
 @Service
 public class McitProjectServiceImpl implements McitProjectService {
 
 	@Autowired
 	private McitProjectDao mcitProjectDao;
+	
+	@Autowired
+	private McitUserService mcitUserService;
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<McitProject> findAll() {
-		return mcitProjectDao.findAll();
+		if (mcitUserService.hasRole(UserRoleEnum.LEADER.toString())) {
+			McitUser currentMcitUser = mcitUserService.getCurrentMcitUser();
+			return mcitProjectDao.findAllByLeader(currentMcitUser.getUserId());
+		} else {
+			return mcitProjectDao.findAll();
+		}
 	}
 
 	@Override
@@ -29,13 +39,18 @@ public class McitProjectServiceImpl implements McitProjectService {
 	}
 
 	@Override
-//	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdateProject(McitProject project) {
+	public void saveProject(McitProject project) {
+		project.setCreator(mcitUserService.getCurrentMcitUser());
+		mcitProjectDao.saveOrUpdateProject(project);
+	}
+	
+	@Override
+	public void updateProject(McitProject project) {
 		mcitProjectDao.saveOrUpdateProject(project);
 	}
 
 	@Override
-//	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void deleteProjectById(Integer projectId) {
 		 McitProject findById = mcitProjectDao.findById(projectId);
 		 mcitProjectDao.deleteProject(findById);
@@ -45,6 +60,12 @@ public class McitProjectServiceImpl implements McitProjectService {
 	@Transactional(readOnly = true)
 	public McitProject findById(Integer projectId) {
 		return mcitProjectDao.findById(projectId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<McitProject> getEigibleProjectsForTaskCreation() {
+		return mcitProjectDao.findAll();
 	}
 
 }

@@ -12,5 +12,6 @@
     <mapping class="com.mcit.project.model.McitProject"/>
     <mapping class="com.mcit.project.model.McitTask"/>
     <mapping class="com.mcit.project.model.McitUser"/>
+    <mapping class="com.mcit.project.model.McitAuthorities"/>
   </session-factory>
 </hibernate-configuration>

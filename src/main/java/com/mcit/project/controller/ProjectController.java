@@ -4,6 +4,7 @@ import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +65,9 @@ public class ProjectController {
 
 	@GetMapping("/viewProject/{projectId}")
 	public ModelAndView viewProject(@PathVariable(name = "projectId") Integer projectId) {
-		return new ModelAndView("projectView", "project", mcitProjectService.findById(projectId));
+		ModelAndView modelAndView = new ModelAndView("projectView", "project", mcitProjectService.findById(projectId));
+		updateCache(modelAndView);
+		return modelAndView;
 	}
 
 	@InitBinder
@@ -85,49 +88,79 @@ public class ProjectController {
 			}
 		});
 		binder.registerCustomEditor(McitProject.class, "leader", new LeadersEditor());
-		/*binder.registerCustomEditor(McitUser.class, "leader", new CustomCollectionEditor(McitUser.class) {
-			protected Object convertElement(Object element) {
-				if (element instanceof McitUser) {
-					return element;
-				}
-				if (element instanceof String) {
-					Integer id = Integer.parseInt((String) element);
-					McitUser user = projectMembersCache.get(id);
-					return user;
-				}
-				return null;
-			}
-		});*/
 	}
 
-	@PostMapping("saveOrUpdateProject")
-	public ModelAndView saveOrUpdateProject(McitProject project, BindingResult result) {
-		mcitProjectService.saveOrUpdateProject(project);
-		return new ModelAndView("projectIndex", "projects", mcitProjectService.findAll());
+	@PostMapping("saveProject")
+	public ModelAndView saveProject(McitProject project, BindingResult result) {
+		mcitProjectService.saveProject(project);
+		return new ModelAndView("redirect:/project/index");
 	}
 
-	@PostMapping("editProject/{projectId}")
+	@PostMapping("updateProject")
+	public ModelAndView updateProject(McitProject project, BindingResult result) {
+		mcitProjectService.updateProject(project);
+		return new ModelAndView("redirect:/project/index");
+	}
+
+	@GetMapping("editProject/{projectId}")
 	public ModelAndView editProject(@PathVariable(name = "projectId") Integer projectId) {
-		return new ModelAndView("projectForm", "project", mcitProjectService.findById(projectId));
+		McitProject findById = mcitProjectService.findById(projectId);
+		ModelAndView modelAndView = new ModelAndView("projectUpdateForm", "project", findById);
+		updateCache(modelAndView);
+		if (findById != null && findById.getProjectMembers() != null && !findById.getProjectMembers().isEmpty()) {
+			Iterator<McitUser> iterator = findById.getProjectMembers().iterator();
+			String selectedMembers = "";
+			int i = 0;
+			while (iterator.hasNext()) {
+				if (i == 0) {
+					selectedMembers += "" + iterator.next().getUserId();
+				} else {
+					selectedMembers += "," + iterator.next().getUserId();
+				}
+				i++;
+			}
+			modelAndView.getModelMap().addAttribute("membersSelected", selectedMembers);
+		}
+		if (findById != null && findById.getLeader() != null) {
+			modelAndView.getModelMap().addAttribute("leaderSelected", findById.getLeader().getUserId());
+		}
+
+		return modelAndView;
 	}
 
 	@PostMapping("deleteProject")
-	public ModelAndView deleteProject() {
-		return null;
+	public ModelAndView deleteProject(McitProject project, BindingResult result) {
+		if (project != null) {
+			Integer projectId = project.getProjectId();
+			mcitProjectService.deleteProjectById(projectId);
+		}
+		return new ModelAndView("redirect:/project/index");
 	}
-	
-	private class LeadersEditor extends PropertyEditorSupport 
-	{
-	    //This will be called when user HTTP Post to server a field bound to DepartmentVO
-	    @Override
-	    public void setAsText(String id) 
-	    {
-	    	int parseInt = Integer.parseInt(id);
-	    	if(leadersCache.containsKey(parseInt))
-	    		this.setValue(leadersCache.get(parseInt));
-	    	else
-	    		this.setValue(null);
-	    }
+
+	private class LeadersEditor extends PropertyEditorSupport {
+		@Override
+		public void setAsText(String id) {
+			int parseInt = Integer.parseInt(id);
+			if (leadersCache.containsKey(parseInt))
+				this.setValue(leadersCache.get(parseInt));
+			else
+				this.setValue(null);
+		}
+	}
+
+	void updateCache(ModelAndView modelAndView) {
+		List<McitUser> leaders = mcitUserService.getLeaders();
+		List<McitUser> members = mcitUserService.getMembers();
+		projectMembersCache = new HashMap<>();
+		leadersCache = new HashMap<>();
+		for (McitUser user : members) {
+			projectMembersCache.put(user.getUserId(), user);
+		}
+		for (McitUser user : leaders) {
+			leadersCache.put(user.getUserId(), user);
+		}
+		modelAndView.getModelMap().addAttribute("leaders", leaders);
+		modelAndView.getModelMap().addAttribute("members", members);
 	}
 
 }

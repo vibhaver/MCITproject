@@ -19,5 +19,9 @@ public interface McitTaskDao {
 	int deleteTaskById(Integer taskId);
 
 	int deleteTaskByProjectId(Integer projectId);
+	
+	List<McitTask> findAllByAssignee(Integer assigneeId);
+	
+	List<McitTask> findAllByLeader(Integer leaderId);
 
 }
