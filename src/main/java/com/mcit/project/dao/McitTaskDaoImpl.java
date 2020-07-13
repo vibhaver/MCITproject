@@ -35,7 +35,7 @@ public class McitTaskDaoImpl implements McitTaskDao {
 	@Override
 	public List<McitTask> findAllByLeader(Integer leaderId) {
 		String hql = "SELECT T FROM McitTask T WHERE T.project.projectId IN (SELECT P.projectId FROM McitProject P WHERE P.leader.userId = :leaderId)";
-		Query<McitTask> q = session.createQuery(hql).setParameter("assigneeId", leaderId);
+		Query<McitTask> q = session.createQuery(hql).setParameter("leaderId", leaderId);
 		return q.getResultList();
 	}
 

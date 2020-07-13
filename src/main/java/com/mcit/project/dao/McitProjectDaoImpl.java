@@ -63,7 +63,7 @@ public class McitProjectDaoImpl implements McitProjectDao {
 	@Override
 	public List<McitProject> findAllByLeader(Integer leaderId) {
 		String hql = "SELECT P FROM McitProject P WHERE P.leader.userId = :leaderId";
-		Query<McitProject> q = session.createQuery(hql).setParameter("assigneeId", leaderId);
+		Query<McitProject> q = session.createQuery(hql).setParameter("leaderId", leaderId);
 		return q.getResultList();
 	}
 }
